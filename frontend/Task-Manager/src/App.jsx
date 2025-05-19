@@ -1,5 +1,11 @@
 import React, { useContext } from "react";
-import { BrowserRouter as Router, Routes, Route, Navigate, Outlet } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+  Outlet,
+} from "react-router-dom";
 
 // Imports Login & SignUp
 import Login from "./pages/Auth/Login";
@@ -14,11 +20,10 @@ import ManageUsers from "./pages/Admin/ManageUsers";
 // Imports User
 import UserDashboard from "./pages/User/UserDashboard";
 import MyTasks from "./pages/User/MyTasks";
-import ViewTaskDetails from "./pages/User/ViewTaksDetails";
 import PrivateRoute from "./routes/PrivateRoute";
 import UserProvider, { UserContext } from "./context/userContext";
 import { Toaster } from "react-hot-toast";
-
+import ViewTasksDetails from "./pages/User/ViewTasksDetails";
 const App = () => {
   return (
     <UserProvider>
@@ -32,7 +37,7 @@ const App = () => {
             <Route element={<PrivateRoute allowedRoles={["admin"]} />}>
               <Route path="/admin/dashboard" element={<Dashboard />} />
               <Route path="/admin/tasks" element={<ManageTasks />} />
-              <Route path="/admin/create-task" element={<CreateTasks />} /> 
+              <Route path="/admin/create-task" element={<CreateTasks />} />
               <Route path="/admin/users" element={<ManageUsers />} />
             </Route>
 
@@ -40,11 +45,14 @@ const App = () => {
             <Route element={<PrivateRoute allowedRoles={["user"]} />}>
               <Route path="/user/dashboard" element={<UserDashboard />} />
               <Route path="/user/tasks" element={<MyTasks />} />
-              <Route path="/user/task-details/:id" element={<ViewTaskDetails />} />
+              {/* Escolha UMA das opções abaixo: */}
+              
+              <Route path="/user/task-details/:id" element={<ViewTasksDetails />}/>{" "}
+              {/* Opção 2: Altere o navigate no MyTasks */}
             </Route>
-          
+
             {/* Rota Padrão */}
-            <Route path="/" element={<Root />}/>
+            <Route path="/" element={<Root />} />
           </Routes>
         </Router>
       </div>
@@ -65,11 +73,15 @@ export default App;
 const Root = () => {
   const { user, loading } = useContext(UserContext);
 
-  if(loading) return <Outlet />;
+  if (loading) return <Outlet />;
 
   if (!user) {
     return <Navigate to="/login" />;
   }
 
-  return user.role === "admin" ? <Navigate to="/admin/dashboard" /> : <Navigate to="/user/dashboard" />;
+  return user.role === "admin" ? (
+    <Navigate to="/admin/dashboard" />
+  ) : (
+    <Navigate to="/user/dashboard" />
+  );
 };
